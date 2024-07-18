@@ -1,5 +1,3 @@
-# Android-Emulator-Setup
-
 
 # Setting up and Running Android Emulators on Linux
 
@@ -78,6 +76,63 @@ Ensure you have `wget` and `unzip` installed. If not, install them using your pa
    emulator -avd my_avd
    ```
 
+## Step 5: Setup Frida and Objection for Bypassing SSL Pinning
+
+### Install Frida and Objection
+
+1. **Install Frida**:
+   ```sh
+   pip install frida-tools
+   ```
+
+2. **Install Objection**:
+   ```sh
+   pip install objection
+   ```
+
+### Setup Frida Server on the Emulator
+
+1. **Download the Frida server**:
+   ```sh
+   wget https://github.com/frida/frida/releases/download/15.1.17/frida-server-15.1.17-android-x86_64.xz
+   ```
+
+2. **Extract the Frida server**:
+   ```sh
+   unxz frida-server-15.1.17-android-x86_64.xz
+   chmod +x frida-server-15.1.17-android-x86_64
+   ```
+
+3. **Push the Frida server to the emulator**:
+   ```sh
+   adb push frida-server-15.1.17-android-x86_64 /data/local/tmp/
+   adb shell "chmod 755 /data/local/tmp/frida-server-15.1.17-android-x86_64"
+   ```
+
+4. **Run the Frida server**:
+   ```sh
+   adb shell "/data/local/tmp/frida-server-15.1.17-android-x86_64 &"
+   ```
+
+### Bypass SSL Pinning with Objection
+
+1. **Start the application** on the emulator.
+
+2. **List running applications**:
+   ```sh
+   frida-ps -U
+   ```
+
+3. **Inject Objection**:
+   ```sh
+   objection -g <AppName> explore
+   ```
+
+4. **Bypass SSL pinning**:
+   ```sh
+   android sslpinning disable
+   ```
+
 ## Full Example Process
 
 1. **Download and extract the command line tools**:
@@ -124,4 +179,26 @@ Ensure you have `wget` and `unzip` installed. If not, install them using your pa
 6. **Start the AVD**:
    ```sh
    emulator -avd my_avd
+   ```
+
+7. **Install Frida and Objection**:
+   ```sh
+   pip install frida-tools
+   pip install objection
+   ```
+
+8. **Download and setup Frida server**:
+   ```sh
+   wget https://github.com/frida/frida/releases/download/15.1.17/frida-server-15.1.17-android-x86_64.xz
+   unxz frida-server-15.1.17-android-x86_64.xz
+   chmod +x frida-server-15.1.17-android-x86_64
+   adb push frida-server-15.1.17-android-x86_64 /data/local/tmp/
+   adb shell "chmod 755 /data/local/tmp/frida-server-15.1.17-android-x86_64"
+   adb shell "/data/local/tmp/frida-server-15.1.17-android-x86_64 &"
+   ```
+
+9. **Bypass SSL pinning with Objection**:
+   ```sh
+   objection -g <AppName> explore
+   android sslpinning disable
    ```
